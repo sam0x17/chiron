@@ -14,8 +14,8 @@ providing **a full pipeline of HTML / CSS / JavaScript minification, basic templ
 external dependency for Chiron is Up which is written in Go and similarly available via a
 cross-platform binary distribution.
 
-Chiron is intended to either be paired with a separate API server
-to facilitate dynamic behavior, or used to create fully static websites.
+Chiron is intended to be paired with a separate API server to facilitate dynamic behavior,
+or to be used to create fully static websites.
 
 The `chiron` binary allows for the creation (and updating) of projects, and provides
 a super-fast local development server based on [kemal](https://kemalcr.com/). All Chiron
