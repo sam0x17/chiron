@@ -10,9 +10,7 @@ comes to developing, compiling and deploying static websites.
 Chiron relies on Crystal ports of [clean-css](https://github.com/jakubpawlowicz/clean-css),
 [uglify-js](https://github.com/mishoo/UglifyJS2), [html-minifier](https://github.com/kangax/html-minifier),
 and [LESS](http://lesscss.org/) (that are embedded via [duktape.cr](https://github.com/jessedoyle/duktape.cr)),
-providing **a full pipeline of HTML / CSS / JavaScript minification, basic templating, LESS support, and deployment to CloudFront/S3 without the need for any Webpack, Node.js or NPM dependencies**. The only
-external dependency for Chiron is Up which is written in Go and similarly available via a
-cross-platform binary distribution.
+providing **a full pipeline of HTML / CSS / JavaScript minification, basic templating, LESS support, and deployment to CloudFront/S3 without the need for any Webpack, Node.js or NPM dependencies**.
 
 Chiron is intended to be paired with a separate API server to facilitate dynamic behavior,
 or to be used to create fully static websites.
