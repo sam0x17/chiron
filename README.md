@@ -13,7 +13,7 @@ and [LESS](http://lesscss.org/) (that are embedded via [duktape.cr](https://gith
 providing **a full pipeline of HTML / CSS / JavaScript minification, basic templating, LESS support, and deployment to CloudFront/S3 without the need for any Webpack, Node.js or NPM dependencies**.
 
 Chiron is intended to be paired with a separate API server to facilitate dynamic behavior,
-or to be used to create fully static websites.
+or to be used alone to create fully static websites.
 
 The `chiron` binary allows for the creation (and updating) of projects, and provides
 a super-fast local development server based on [kemal](https://kemalcr.com/). All Chiron
