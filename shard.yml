@@ -4,6 +4,10 @@ version: 0.1.0
 authors:
   - Sam Johnson <sam@durosoft.com>
 
+targets:
+  chiron:
+    main: src/main.cr
+
 dependencies:
   html-minifier:
     github: sam0x17/html-minifier
