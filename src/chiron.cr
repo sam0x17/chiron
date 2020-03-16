@@ -1,6 +1,6 @@
-# TODO: Write documentation for `Chiron`
-module Chiron
-  VERSION = "0.1.0"
+require "html-minifier"
+require "css-minifier"
+require "js-minifier"
 
-  # TODO: Put your code here
+module Chiron
 end
