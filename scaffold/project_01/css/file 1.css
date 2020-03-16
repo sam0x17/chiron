@@ -1,0 +1,23 @@
+body {
+  background-color: red;
+  margin-left: 1px;
+  margin-right: 1px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+h1 {
+  color: blue;
+  border: 1px solid green;
+}
+
+.my-class {
+  background-color: blue;
+  font-weight: bold;
+  font-size: 32px;
+  text-align: center;
+}
