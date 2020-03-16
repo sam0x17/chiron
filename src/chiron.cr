@@ -37,19 +37,27 @@ module Chiron
   def self.load_project(@@path = ".")
     @@layers.clear
     @@registered_layer_paths.clear
-    begin; add_layer "html", LayerType::HTML; rescue; end;
-    begin; add_layer "css", LayerType::CSS; rescue; end;
-    begin; add_layer "js", LayerType::JavaScript; rescue; end;
+    add_layer! "html", LayerType::HTML
+    add_layer! "css", LayerType::CSS
+    add_layer! "js", LayerType::JavaScript
   end
 
-  def self.add_layer(src_dir : String, type : LayerType = LayerType::Static, dest_dir : String? = nil)
+  def self.add_layer!(src_dir : String, type : LayerType = LayerType::Static, dest_dir : String? = nil)
     layer = Layer.new(src_dir, type, dest_dir)
     raise "source directory #{layer.src_dir} for new layer could not be found!" unless Dir.exists?(layer.src_dir)
     @@layers << layer
     true
   end
+
+  def self.add_layer(src_dir : String, type : LayerType = LayerType::Static, dest_dir : String? = nil)
+    begin
+      return add_layer!(src_dir, type, dest_dir)
+    rescue
+    end
+  end
 end
 
 Chiron.load_project("./scaffold/project_01")
+Chiron.add_layer("images")
 pp Chiron.layers
 
