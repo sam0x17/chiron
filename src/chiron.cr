@@ -13,7 +13,7 @@ end
 struct Chiron::Layer
   property src_dir : String
   property type : LayerType
-  property dest_dir : String # relative to project root
+  property dest_dir : String
 
   def initialize(src_dir, @type, dest_dir = nil)
     @src_dir = Path[Chiron.project_path].join(src_dir).to_s
