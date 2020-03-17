@@ -4,8 +4,8 @@ require "js-minifier"
 
 enum Chiron::LayerType
   HTML
-  JavaScript
   CSS
+  JavaScript
   Static
   Ignore
 end
