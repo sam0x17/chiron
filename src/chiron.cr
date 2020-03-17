@@ -56,8 +56,3 @@ module Chiron
     end
   end
 end
-
-Chiron.load_project("./scaffold/project_01")
-Chiron.add_layer("images")
-pp Chiron.layers
-
