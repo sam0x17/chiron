@@ -55,4 +55,8 @@ module Chiron
     rescue
     end
   end
+
+  def self.process!(output_dir : String)
+
+  end
 end
