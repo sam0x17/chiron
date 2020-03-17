@@ -37,9 +37,9 @@ module Chiron
   def self.load_project(@@path = ".")
     @@layers.clear
     @@registered_layer_paths.clear
-    add_layer! "html", LayerType::HTML
-    add_layer! "css", LayerType::CSS
-    add_layer! "js", LayerType::JavaScript
+    add_layer "html", LayerType::HTML
+    add_layer "css", LayerType::CSS
+    add_layer "js", LayerType::JavaScript
   end
 
   def self.add_layer!(src_dir : String, type : LayerType = LayerType::Static, dest_dir : String? = nil)
