@@ -19,7 +19,7 @@ class Chiron::Layer
   def initialize(src_dir, @type, dest_dir = nil, ext_filter = nil)
     @src_dir = Path[Chiron.project_path].join(src_dir).to_s
     @dest_dir = dest_dir.nil? ? File.basename(src_dir) : dest_dir
-    @ext_filter = ext_filter || "*"
+    @ext_filter = ext_filter || ""
   end
 end
 
@@ -39,9 +39,9 @@ module Chiron
   def self.load_project(@@path = ".")
     @@layers.clear
     @@registered_layer_paths.clear
-    add_layer "html", LayerType::HTML, "*.html|*.htm"
-    add_layer "css", LayerType::CSS, "*.css"
-    add_layer "js", LayerType::JavaScript, "*.js|*.json"
+    add_layer "html", LayerType::HTML, "html|htm"
+    add_layer "css", LayerType::CSS, "css"
+    add_layer "js", LayerType::JavaScript, "js|json"
   end
 
   def self.add_layer!(src_dir : String, type : LayerType = LayerType::Static, ext_filter : String? = nil, dest_dir : String? = nil)
@@ -65,9 +65,13 @@ module Chiron
     actions = Array(Tuple(Layer, String)).new # layer, source file path
     groups = Array(Array(Tuple(Layer, String))).new
     System.num_cpus.times { groups << Array(Tuple(Layer, String)).new }
-    layers.each do |layer|
+    layers.each_with_index do |layer, i|
+      exts = layer.ext_filter.split("|").to_set
+      next unless File.extname()
       Dir.each_child(Path[@@path].join(layer.src_dir)) do |child|
-        
+        path = Path[@@path].join(layer.src_dir).join(child)
+
+        action = {layer, path}
       end
     end
   end
