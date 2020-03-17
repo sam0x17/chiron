@@ -1,6 +1,7 @@
 require "html-minifier"
 require "css-minifier"
 require "js-minifier"
+require "file_utils"
 
 enum Chiron::LayerType
   HTML
@@ -59,20 +60,57 @@ module Chiron
   end
 
   def self.process!(output_dir : String)
+    raise "output directory #{output_dir} is not accessible!" unless Dir.exists?(output_dir)
     puts ""
-    puts "compiling assets in #{@@path}..."
-    puts ""
+    puts "discovering assets in #{@@path}..."
     actions = Array(Tuple(Layer, String)).new # layer, source file path
-    groups = Array(Array(Tuple(Layer, String))).new
-    System.num_cpus.times { groups << Array(Tuple(Layer, String)).new }
-    layers.each_with_index do |layer, i|
+    layers.each do |layer|
       exts = layer.ext_filter.split("|").to_set
-      next unless File.extname()
-      Dir.each_child(Path[@@path].join(layer.src_dir)) do |child|
-        path = Path[@@path].join(layer.src_dir).join(child)
-
-        action = {layer, path}
+      puts " - #{layer.src_dir}"
+      Dir.each_child(layer.src_dir) do |child|
+        path = Path[layer.src_dir].join(child).to_s
+        next unless exts.includes?(File.extname(path.downcase).gsub(".", ""))
+        actions << {layer, path}
       end
     end
+    actions = actions.shuffle
+    groups = Array(Array(Tuple(Layer, String))).new
+    num_groups = [System.cpu_count, actions.size].min
+    num_groups.times { groups << Array(Tuple(Layer, String)).new }
+    actions.each_with_index { |action, i| groups[i % num_groups] << action }
+    puts ""
+    puts "compiling #{actions.size} assets to #{output_dir}..."
+    chan = Channel(Nil).new
+    groups.each do |group|
+      spawn do
+        group.each do |action|
+          layer, src_file_path = action
+          dest_file_path = Path[layer.dest_dir].join(File.basename(src_file_path))
+          FileUtils.mkdir_p(layer.dest_dir)
+          case layer.type
+          when LayerType::HTML
+            data = File.read(src_file_path)
+            minified = HtmlMinifier.minify!(data)
+            File.write(dest_file_path, minified)
+          when LayerType::CSS
+            data = File.read(src_file_path)
+            minified = CssMinifier.minify!(data)
+            File.write(dest_file_path, minified)
+          when LayerType::JavaScript
+            data = File.read(src_file_path)
+            minified = JsMinifier.minify!(data)
+            File.write(dest_file_path, minified)
+          when LayerType::Static
+            FileUtils.cp(src_file_path, dest_file_path)
+          when LayerType::Ignore
+          end
+          Fiber.yield
+        end
+      end
+    end
+    puts ""
   end
 end
+
+Chiron.load_project("scaffold/project_01")
+Chiron.process!("/tmp/chiron")
