@@ -6,7 +6,7 @@ authors:
 
 targets:
   chiron:
-    main: src/main.cr
+    main: src/cli.cr
 
 dependencies:
   html-minifier:
