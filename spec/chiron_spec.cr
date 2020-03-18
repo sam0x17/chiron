@@ -1,5 +1,9 @@
 require "./spec_helper"
 
+PROJECT_01_CSS_FILE_1 = {{read_file("scaffold/project_01/css/file 1.css")}}
+PROJECT_01_HTML_INDEX = {{read_file("scaffold/project_01/html/index.html")}}
+PROJECT_01_JS_SCRIPT = {{read_file("scaffold/project_01/js/script.js")}}
+
 describe Chiron do
   describe "layers" do
     it "identifies layers for a default project layout" do
@@ -47,5 +51,20 @@ describe Chiron do
       layers[1].type.should eq Chiron::LayerType::Static
       layers[1].dest_dir.should eq "images"
     end
+  end
+
+  it "converts example project_01" do
+    refresh_test_dir
+    Chiron.load_project("scaffold/project_01")
+    Chiron.process!(TEST_DIR)
+    processed_css = File.read(Path[TEST_DIR].join("css/file 1.css").to_s)
+    processed_html = File.read(Path[TEST_DIR].join("html/index.html").to_s)
+    processed_js = File.read(Path[TEST_DIR].join("js/script.js").to_s)
+    processed_css.size.should be < PROJECT_01_CSS_FILE_1.size
+    processed_js.size.should be < PROJECT_01_JS_SCRIPT.size
+    processed_html.size.should be < PROJECT_01_HTML_INDEX.size
+    processed_css.size.should be > 10
+    processed_js.size.should be > 10
+    processed_html.size.should be > 10
   end
 end

@@ -37,6 +37,10 @@ module Chiron
     @@layers
   end
 
+  def self.log(message)
+    puts(message) unless ENV["VERBOSE"]? == "false"
+  end
+
   def self.load_project(@@path = ".")
     @@layers.clear
     @@registered_layer_paths.clear
@@ -61,12 +65,12 @@ module Chiron
 
   def self.process!(output_dir : String)
     raise "output directory #{output_dir} is not accessible!" unless Dir.exists?(output_dir)
-    puts ""
-    puts "discovering assets in #{@@path}..."
+    log ""
+    log "discovering assets in #{@@path}..."
     actions = Array(Tuple(Layer, String)).new # layer, source file path
     layers.each do |layer|
       exts = layer.ext_filter.split("|").to_set
-      puts " - #{layer.src_dir}"
+      log " - #{layer.src_dir}"
       Dir.each_child(layer.src_dir) do |child|
         path = Path[layer.src_dir].join(child).to_s
         next unless exts.includes?(File.extname(path.downcase).gsub(".", ""))
@@ -78,8 +82,8 @@ module Chiron
     num_groups = [System.cpu_count, actions.size].min
     num_groups.times { groups << Array(Tuple(Layer, String)).new }
     actions.each_with_index { |action, i| groups[i % num_groups] << action }
-    puts ""
-    puts "compiling #{actions.size} assets on #{num_groups} cores to #{output_dir}..."
+    log ""
+    log "compiling #{actions.size} assets on #{num_groups} cores to #{output_dir}..."
     chan = Channel(Nil).new
     groups.each do |group|
       spawn do
@@ -104,17 +108,14 @@ module Chiron
             FileUtils.cp(src_file_path, dest_file_path)
           when LayerType::Ignore
           end
-          puts " - wrote #{dest_file_path}"
+          log " - wrote #{dest_file_path}"
           chan.send(nil)
         end
       end
     end
     actions.size.times { chan.receive }
-    puts ""
-    puts "done."
-    puts ""
+    log ""
+    log "done."
+    log ""
   end
 end
-
-Chiron.load_project("scaffold/project_01")
-Chiron.process!("/tmp/chiron")
