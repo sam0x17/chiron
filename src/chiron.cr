@@ -79,14 +79,14 @@ module Chiron
     num_groups.times { groups << Array(Tuple(Layer, String)).new }
     actions.each_with_index { |action, i| groups[i % num_groups] << action }
     puts ""
-    puts "compiling #{actions.size} assets to #{output_dir}..."
+    puts "compiling #{actions.size} assets on #{num_groups} cores to #{output_dir}..."
     chan = Channel(Nil).new
     groups.each do |group|
       spawn do
         group.each do |action|
           layer, src_file_path = action
-          dest_file_path = Path[layer.dest_dir].join(File.basename(src_file_path))
-          FileUtils.mkdir_p(layer.dest_dir)
+          dest_file_path = Path[output_dir].join(Path[layer.dest_dir].join(File.basename(src_file_path))).to_s
+          FileUtils.mkdir_p(Path[output_dir].join(Path[layer.dest_dir]).to_s)
           case layer.type
           when LayerType::HTML
             data = File.read(src_file_path)
@@ -104,10 +104,14 @@ module Chiron
             FileUtils.cp(src_file_path, dest_file_path)
           when LayerType::Ignore
           end
-          Fiber.yield
+          puts " - wrote #{dest_file_path}"
+          chan.send(nil)
         end
       end
     end
+    actions.size.times { chan.receive }
+    puts ""
+    puts "done."
     puts ""
   end
 end
