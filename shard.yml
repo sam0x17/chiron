@@ -18,6 +18,8 @@ dependencies:
   js-minifier:
     github: sam0x17/js-minifier
     branch: master
+  kemal:
+    github: kemalcr/kemal
 
 crystal: 0.33.0
 

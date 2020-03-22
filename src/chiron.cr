@@ -2,6 +2,8 @@ require "html-minifier"
 require "css-minifier"
 require "js-minifier"
 require "file_utils"
+require "kemal"
+require "./kemal_patch"
 
 enum Chiron::LayerType
   HTML
@@ -18,9 +20,16 @@ class Chiron::Layer
   property ext_filter : String
 
   def initialize(src_dir, @type, dest_dir = nil, ext_filter = nil)
-    @src_dir = Path[Chiron.project_path].join(src_dir).to_s
-    @dest_dir = dest_dir.nil? ? File.basename(src_dir) : dest_dir
+    @src_dir = Path[Chiron.project_path].join(src_dir).normalize.to_s
+    @dest_dir = dest_dir.nil? ? Path[File.basename(src_dir)].normalize.to_s : Path[dest_dir].normalize.to_s
     @ext_filter = ext_filter || ""
+  end
+
+  def resolve_path(path : String | Path)
+    path = Path[path].normalize.to_s
+    path = path[1..] if path.starts_with?("/")
+    path = path[@dest_dir.size..] if path.starts_with?(@dest_dir)
+    Path[src_dir].join(path).normalize.to_s
   end
 end
 
@@ -44,7 +53,7 @@ module Chiron
   def self.load_project(@@path = ".")
     @@layers.clear
     @@registered_layer_paths.clear
-    add_layer "html", LayerType::HTML, "html|htm"
+    add_layer "html", LayerType::HTML, "html|htm", ""
     add_layer "css", LayerType::CSS, "css"
     add_layer "js", LayerType::JavaScript, "js|json"
   end
@@ -117,5 +126,28 @@ module Chiron
     log ""
     log "done."
     log ""
+  end
+
+  def self.watch!(port = 3000)
+    Kemal.config.port = port
+  
+    get "/*" do |env|
+      path = URI.decode(env.request.path)
+      layers.each do |layer|
+        resolved = layer.resolve_path(path)
+        if File.exists?(resolved)
+          env.response.status_code = 200
+          break send_file(env, resolved)
+        else
+          env.response.status_code = 404
+        end
+      end
+    end
+
+    error 404 do |env|
+      env.response.print "404 - File Not Found"
+    end
+
+    Kemal.run
   end
 end
