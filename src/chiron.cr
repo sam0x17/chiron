@@ -36,7 +36,6 @@ end
 module Chiron
   @@path : String = "."
   @@layers : Array(Layer) = Array(Layer).new
-  @@registered_layer_paths : Set(String) = Set(String).new
 
   def self.project_path : String
     @@path
@@ -52,7 +51,6 @@ module Chiron
 
   def self.load_project(@@path = ".")
     @@layers.clear
-    @@registered_layer_paths.clear
     add_layer "html", LayerType::HTML, "html|htm", ""
     add_layer "css", LayerType::CSS, "css"
     add_layer "js", LayerType::JavaScript, "js|json"
