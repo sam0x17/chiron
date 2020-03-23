@@ -3,11 +3,11 @@ require "./chiron"
 class Chiron::CLI
   @@autorun : Bool = true
 
-  def autorun?
+  def self.autorun?
     @@autorun
   end
 
-  def autorun=(val)
+  def self.autorun=(val)
     @@autorun = val
   end
 
