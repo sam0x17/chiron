@@ -51,7 +51,7 @@ module Chiron
 
   def self.load_project(@@path = ".")
     @@layers.clear
-    add_layer "html", LayerType::HTML, "html|htm", ""
+    add_layer "html", LayerType::HTML, "html|htm"
     add_layer "css", LayerType::CSS, "css"
     add_layer "js", LayerType::JavaScript, "js|json"
   end
